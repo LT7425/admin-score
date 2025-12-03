@@ -26,7 +26,7 @@ public class RoutesController {
     public ApiResponse<List<RouteNode>> getAsyncRoutes(Authentication auth) {
         String username = auth.getName();
         List<String> roleCodes = userService.getUserRoleCodes(username);
-        List<Page> pages = userService.getPagesByRoleCodes(roleCodes);
+        List<Page> pages = userService.getUserPages(username);
         List<RouteNode> routes = new ArrayList<>();
         List<String> userRoleLabels = roleCodes.stream().map(String::toLowerCase).collect(Collectors.toList());
 

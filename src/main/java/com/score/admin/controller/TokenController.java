@@ -14,20 +14,27 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-class RefreshTokenRequest {
-    public String refreshToken;
-    public String getRefreshToken() { return refreshToken; }
-    public void setRefreshToken(String refreshToken) { this.refreshToken = refreshToken; }
-}
-
 @RestController
 public class TokenController {
     private final JwtUtil jwtUtil;
     private final RefreshTokenService refreshTokenService;
-    public TokenController(JwtUtil jwtUtil, RefreshTokenService refreshTokenService) { this.jwtUtil = jwtUtil; this.refreshTokenService = refreshTokenService; }
+
+    public TokenController(JwtUtil jwtUtil, RefreshTokenService refreshTokenService) {
+        this.jwtUtil = jwtUtil;
+        this.refreshTokenService = refreshTokenService;
+    }
+
+    // 内部类添加public修饰符
+    public static class RefreshTokenRequest {
+        private String refreshToken;
+
+        public String getRefreshToken() { return refreshToken; }
+        public void setRefreshToken(String refreshToken) { this.refreshToken = refreshToken; }
+    }
 
     @PostMapping("/refresh-token")
     public ApiResponse<AuthResponse> refresh(@RequestBody RefreshTokenRequest request) {
+        // 方法内容保持不变
         try {
             var claims = jwtUtil.parse(request.getRefreshToken());
             Object type = claims.get("type");
@@ -61,4 +68,3 @@ public class TokenController {
         }
     }
 }
-

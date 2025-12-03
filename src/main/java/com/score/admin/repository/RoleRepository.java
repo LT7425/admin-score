@@ -13,10 +13,7 @@ import java.util.Optional;
 public interface RoleRepository extends JpaRepository<Role, Long> {
     
     Optional<Role> findByCode(String code);
-    
-    @Query("SELECT r FROM Role r JOIN r.users u WHERE u.username = :username")
-    List<Role> findByUsername(@Param("username") String username);
-    
+
     @Query("SELECT DISTINCT r FROM Role r JOIN FETCH r.pages WHERE r.code IN :codes")
     List<Role> findByCodesWithPages(@Param("codes") List<String> codes);
 }

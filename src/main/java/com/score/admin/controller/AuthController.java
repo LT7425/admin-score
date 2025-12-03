@@ -1,6 +1,7 @@
 package com.score.admin.controller;
 
 import com.score.admin.common.ApiResponse;
+import com.score.admin.domain.User;
 import com.score.admin.dto.AuthResponse;
 import com.score.admin.dto.RegisterRequest;
 import com.score.admin.security.JwtUtil;

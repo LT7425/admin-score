@@ -21,7 +21,7 @@ public class User {
     @Column(length = 128)
     private String roles;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY) // 显式指定懒加载（默认值，增强可读性）
     @JoinTable(
         name = "users_roles",
         joinColumns = @JoinColumn(name = "user_id"),

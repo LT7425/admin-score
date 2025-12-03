@@ -20,10 +20,11 @@ public class Role {
     @Column(name = "description", length = 255)
     private String description;
 
-    @ManyToMany(mappedBy = "roles")
-    private Set<User> users = new HashSet<>();
+//    @ManyToMany(mappedBy = "roleSet", fetch = FetchType.LAZY)
+//    private Set<User> users = new HashSet<>();
 
-    @ManyToMany
+
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "roles_pages",
         joinColumns = @JoinColumn(name = "role_id"),
@@ -61,14 +62,6 @@ public class Role {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public Set<User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(Set<User> users) {
-        this.users = users;
     }
 
     public Set<Page> getPages() {

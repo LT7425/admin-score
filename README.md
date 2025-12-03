@@ -9,6 +9,7 @@
 
 ```bash
 mvn clean package
+mvn clean package -DskipTests
 ```
 
 - 运行应用（MySQL 配置）：
@@ -104,10 +105,3 @@ Invoke-RestMethod -Method Get -Uri 'http://localhost:8080/api/hello' -Headers @{
 
 默认会在启动时初始化管理员账号：`admin/admin123`。如需修改，可在 `UserService` 初始化逻辑或数据库中调整。
 
-## 后续拓展建议
-
-- 按模块拆分 controller/service/repository 分层
-- 增强持久化与迁移（Flyway/Liquibase）
-- 完善权限模型与角色（RBAC）
-- 统一错误码枚举与国际化
-- 生产就绪的日志与链路追踪（如 Sleuth/Observability）

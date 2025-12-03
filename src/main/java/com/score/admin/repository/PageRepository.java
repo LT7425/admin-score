@@ -11,12 +11,9 @@ import java.util.Optional;
 
 @Repository
 public interface PageRepository extends JpaRepository<Page, Long> {
-    
+
     Optional<Page> findByName(String name);
-    
-    @Query("SELECT DISTINCT p FROM Page p JOIN p.roles r JOIN r.users u WHERE u.username = :username")
-    List<Page> findByUsername(@Param("username") String username);
-    
+
     @Query("SELECT DISTINCT p FROM Page p JOIN p.roles r WHERE r.code IN :roleCodes")
     List<Page> findByRoleCodes(@Param("roleCodes") List<String> roleCodes);
 }

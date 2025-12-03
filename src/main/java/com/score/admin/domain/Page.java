@@ -23,7 +23,7 @@ public class Page {
     @Column(name = "title", length = 255)
     private String title;
 
-    @ManyToMany(mappedBy = "pages")
+    @ManyToMany(mappedBy = "pages", fetch = FetchType.LAZY)
     private Set<Role> roles = new HashSet<>();
 
     public Long getId() {

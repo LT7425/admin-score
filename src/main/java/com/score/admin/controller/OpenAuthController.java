@@ -10,6 +10,8 @@ import com.score.admin.security.JwtUtil;
 import com.score.admin.service.UserService;
 import com.score.admin.service.RefreshTokenService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,6 +27,7 @@ public class OpenAuthController {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final RefreshTokenService refreshTokenService;
+    private static final Logger logger = LoggerFactory.getLogger(OpenAuthController.class);
 
     public OpenAuthController(UserService userService, PasswordEncoder passwordEncoder, JwtUtil jwtUtil, RefreshTokenService refreshTokenService) {
         this.userService = userService;
@@ -41,6 +44,8 @@ public class OpenAuthController {
             throw new BusinessException(401, "用户名或密码错误");
         }
         List<String> roleCodes = userService.getUserRoleCodes(user.getUsername());
+        logger.info("开始处理登录请求，用户名: {}", request.getUsername());
+
         Map<String, Object> claims = new HashMap<>();
         claims.put("roles", roleCodes);
         String accessToken = jwtUtil.generateToken(user.getUsername(), claims);
