@@ -35,8 +35,8 @@ public class AuthController {
 
     @PostMapping("/register")
     public ApiResponse<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
-        User user = userService.register(request.getUsername(), request.getPassword());
-        java.util.List<String> roleCodes = userService.getUserRoleCodes(user.getUsername());
+        User user = userService.register(request.getEmail(), request.getUsername(), request.getPassword());
+        java.util.List<String> roleCodes = userService.getUserRoleCodes(user.getEmail());
         Map<String, Object> claims = new HashMap<>();
         claims.put("roles", roleCodes);
         String accessToken = jwtUtil.generateToken(user.getUsername(), claims);
@@ -51,7 +51,7 @@ public class AuthController {
         AuthResponse resp = new AuthResponse();
         resp.setAvatar("");
         resp.setUsername(user.getUsername());
-        resp.setNickname(user.getUsername());
+        resp.setEmail(user.getEmail());
         resp.setRoles(roleCodes);
         resp.setPermissions(userService.getUserPermissions(user.getUsername()));
         resp.setAccessToken(accessToken);

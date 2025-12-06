@@ -11,17 +11,17 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 64)
+    @Column(nullable = false, length = 64, name = "username")
     private String username;
+
+    @Column(nullable = false, unique = true, length = 128)
+    private String email;
 
     @Column(nullable = false, length = 128)
     private String password;
 
-    // 保留旧的roles字段用于兼容性，但主要使用新的关联关系
-    @Column(length = 128)
-    private String roles;
 
-    @ManyToMany(fetch = FetchType.LAZY) // 显式指定懒加载（默认值，增强可读性）
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "users_roles",
         joinColumns = @JoinColumn(name = "user_id"),
@@ -44,6 +44,13 @@ public class User {
     public void setUsername(String username) {
         this.username = username;
     }
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
     public String getPassword() {
         return password;
@@ -51,14 +58,6 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getRoles() {
-        return roles;
-    }
-
-    public void setRoles(String roles) {
-        this.roles = roles;
     }
 
     public Set<Role> getRoleSet() {

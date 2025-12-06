@@ -31,22 +31,22 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public Optional<User> findByUsername(String username) {
-        return userRepository.findByUsername(username);
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
-
     @Transactional
     public User ensureAdminUser() {
-        return userRepository.findByUsername("admin").orElseGet(() -> {
+        String adminEmail = "admin@example.com";
+        return userRepository.findByEmail(adminEmail).orElseGet(() -> {
             User u = new User();
             u.setUsername("admin");
+            u.setEmail(adminEmail);
             u.setPassword(passwordEncoder.encode("admin123"));
-            u.setRoles("ADMIN");
 
-            // 获取ADMIN角色并关联
+            // 获取ADMIN角色并关联（保持不变）
             Role adminRole = roleRepository.findByCode("ADMIN").orElseGet(() -> {
                 Role role = new Role();
-                role.setCode("ADMIN");
+
                 role.setName("管理员");
                 role.setDescription("拥有全部页面权限");
                 return roleRepository.save(role);
@@ -58,14 +58,14 @@ public class UserService {
     }
 
     @Transactional
-    public User register(String username, String rawPassword) {
-        if (userRepository.findByUsername(username).isPresent()) {
-            throw new BusinessException(1002, "用户名已存在");
+    public User register(String email, String username, String rawPassword) {
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new BusinessException(1002, "邮箱已被注册");
         }
         User u = new User();
+        u.setEmail(email);
         u.setUsername(username);
         u.setPassword(passwordEncoder.encode(rawPassword));
-        u.setRoles("USER");
 
         // 获取USER角色并关联
         Role userRole = roleRepository.findByCode("USER").orElseGet(() -> {
@@ -81,11 +81,11 @@ public class UserService {
     }
 
     /**
-     * 根据用户名查询关联的角色列表
+     * 根据用户邮箱查询关联的角色列表
      */
-    public List<Role> getUserRoles(String username) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException(username));
+    public List<Role> getUserRoles(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException(email));
         return Optional.ofNullable(user.getRoleSet())
                 .orElse(Collections.emptySet())
                 .stream()
@@ -93,20 +93,20 @@ public class UserService {
     }
 
     /**
-     * 根据用户名查询角色编码列表
+     * 根据用户邮箱查询角色编码列表
      */
-    public List<String> getUserRoleCodes(String username) {
-        return getUserRoles(username).stream()
+    public List<String> getUserRoleCodes(String email) {
+        return getUserRoles(email).stream()
                 .map(Role::getCode)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 
     /**
-     * 根据用户名查询关联的页面（替代原 PageRepository.findByUsername）
+     * 根据用户名查询关联的页面
      */
-    public List<Page> getUserPages(String username) {
-        List<String> roleCodes = getUserRoleCodes(username);
+    public List<Page> getUserPages(String email) {
+        List<String> roleCodes = getUserRoleCodes(email);
         // 如果角色编码为空，返回空列表
         if (roleCodes.isEmpty()) {
             return Collections.emptyList();

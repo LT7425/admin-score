@@ -38,29 +38,28 @@ public class OpenAuthController {
 
     @PostMapping("/login")
     public ApiResponse<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
-        User user = userService.findByUsername(request.getUsername())
+        User user = userService.findByEmail(request.getEmail())
                 .orElseThrow(() -> new BusinessException(401, "用户名或密码错误"));
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new BusinessException(401, "用户名或密码错误");
         }
-        List<String> roleCodes = userService.getUserRoleCodes(user.getUsername());
-        logger.info("开始处理登录请求，用户名: {}", request.getUsername());
+        List<String> roleCodes = userService.getUserRoleCodes(user.getEmail());
+        logger.info("开始处理登录请求，用户名: {}", request.getEmail());
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("roles", roleCodes);
-        String accessToken = jwtUtil.generateToken(user.getUsername(), claims);
-        String refreshToken = jwtUtil.generateRefreshToken(user.getUsername(), new HashMap<>(claims));
+        String accessToken = jwtUtil.generateToken(user.getEmail(), claims);
+        String refreshToken = jwtUtil.generateRefreshToken(user.getEmail(), new HashMap<>(claims));
         long expiresAt = System.currentTimeMillis() + jwtUtil.getExpirationMs();
         String expiresStr = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date(expiresAt));
         var refreshClaims = jwtUtil.parse(refreshToken);
         String jti = refreshClaims.getId();
         long refreshExpiresAt = refreshClaims.getExpiration().getTime();
-        refreshTokenService.saveToken(jti, user.getUsername(), refreshExpiresAt);
+        refreshTokenService.saveToken(jti, user.getEmail(), refreshExpiresAt);
 
         AuthResponse resp = new AuthResponse();
         resp.setAvatar("");
         resp.setUsername(user.getUsername());
-        resp.setNickname(user.getUsername());
         resp.setRoles(roleCodes);
         resp.setPermissions(userService.getUserPermissions(user.getUsername()));
         resp.setAccessToken(accessToken);
@@ -71,8 +70,8 @@ public class OpenAuthController {
 
     @PostMapping("/register")
     public ApiResponse<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
-        User user = userService.register(request.getUsername(), request.getPassword());
-        List<String> roleCodes = userService.getUserRoleCodes(user.getUsername());
+        User user = userService.register(request.getEmail(), request.getUsername(), request.getPassword());
+        List<String> roleCodes = userService.getUserRoleCodes(user.getEmail());
         Map<String, Object> claims = new HashMap<>();
         claims.put("roles", roleCodes);
         String accessToken = jwtUtil.generateToken(user.getUsername(), claims);
@@ -87,7 +86,7 @@ public class OpenAuthController {
         AuthResponse resp = new AuthResponse();
         resp.setAvatar("");
         resp.setUsername(user.getUsername());
-        resp.setNickname(user.getUsername());
+        resp.setEmail(user.getEmail());
         resp.setRoles(roleCodes);
         resp.setPermissions(userService.getUserPermissions(user.getUsername()));
         resp.setAccessToken(accessToken);

@@ -5,7 +5,7 @@ import java.util.List;
 public class AuthResponse {
     private String avatar;
     private String username;
-    private String nickname;
+    private String email;
     private List<String> roles;
     private List<String> permissions;
     private String accessToken;
@@ -16,8 +16,8 @@ public class AuthResponse {
     public void setAvatar(String avatar) { this.avatar = avatar; }
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
-    public String getNickname() { return nickname; }
-    public void setNickname(String nickname) { this.nickname = nickname; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
     public List<String> getRoles() { return roles; }
     public void setRoles(List<String> roles) { this.roles = roles; }
     public List<String> getPermissions() { return permissions; }
