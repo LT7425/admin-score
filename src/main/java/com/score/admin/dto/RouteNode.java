@@ -8,6 +8,8 @@ public class RouteNode {
     private String component;
     private RouteMeta meta;
     private List<RouteNode> children;
+    private String rank;
+    private String redirect;
 
     public String getPath() { return path; }
     public void setPath(String path) { this.path = path; }
@@ -19,5 +21,8 @@ public class RouteNode {
     public void setMeta(RouteMeta meta) { this.meta = meta; }
     public List<RouteNode> getChildren() { return children; }
     public void setChildren(List<RouteNode> children) { this.children = children; }
+    public String getRank() { return rank; }
+    public void setRank(String rank) { this.rank = rank; }
+    public String getRedirect() { return redirect; }
+    public void setRedirect(String redirect) { this.redirect = redirect; }
 }
-

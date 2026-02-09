@@ -59,9 +59,10 @@ public class OpenAuthController {
 
         AuthResponse resp = new AuthResponse();
         resp.setAvatar("");
+        resp.setEmail(user.getEmail());
         resp.setUsername(user.getUsername());
         resp.setRoles(roleCodes);
-        resp.setPermissions(userService.getUserPermissions(user.getUsername()));
+        resp.setPermissions(userService.getUserPermissions(user.getEmail()));
         resp.setAccessToken(accessToken);
         resp.setRefreshToken(refreshToken);
         resp.setExpires(expiresStr);
@@ -88,7 +89,7 @@ public class OpenAuthController {
         resp.setUsername(user.getUsername());
         resp.setEmail(user.getEmail());
         resp.setRoles(roleCodes);
-        resp.setPermissions(userService.getUserPermissions(user.getUsername()));
+        resp.setPermissions(userService.getUserPermissions(user.getEmail()));
         resp.setAccessToken(accessToken);
         resp.setRefreshToken(refreshToken);
         resp.setExpires(expiresStr);

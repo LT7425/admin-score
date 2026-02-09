@@ -53,7 +53,7 @@ public class AuthController {
         resp.setUsername(user.getUsername());
         resp.setEmail(user.getEmail());
         resp.setRoles(roleCodes);
-        resp.setPermissions(userService.getUserPermissions(user.getUsername()));
+        resp.setPermissions(userService.getUserPermissions(user.getEmail()));
         resp.setAccessToken(accessToken);
         resp.setRefreshToken(refreshToken);
         resp.setExpires(expiresStr);

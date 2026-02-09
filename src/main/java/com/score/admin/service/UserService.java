@@ -22,9 +22,9 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     public UserService(UserRepository userRepository,
-                      RoleRepository roleRepository,
-                      PageRepository pageRepository,
-                      PasswordEncoder passwordEncoder) {
+                       RoleRepository roleRepository,
+                       PageRepository pageRepository,
+                       PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.pageRepository = pageRepository;
@@ -34,6 +34,7 @@ public class UserService {
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
+
     @Transactional
     public User ensureAdminUser() {
         String adminEmail = "admin@example.com";
@@ -44,7 +45,7 @@ public class UserService {
             u.setPassword(passwordEncoder.encode("admin123"));
 
             // 获取ADMIN角色并关联（保持不变）
-            Role adminRole = roleRepository.findByCode("ADMIN").orElseGet(() -> {
+            Role adminRole = roleRepository.findByCode("admin").orElseGet(() -> {
                 Role role = new Role();
 
                 role.setName("管理员");
@@ -67,14 +68,9 @@ public class UserService {
         u.setUsername(username);
         u.setPassword(passwordEncoder.encode(rawPassword));
 
-        // 获取USER角色并关联
-        Role userRole = roleRepository.findByCode("USER").orElseGet(() -> {
-            Role role = new Role();
-            role.setCode("USER");
-            role.setName("用户");
-            role.setDescription("普通用户页面权限");
-            return roleRepository.save(role);
-        });
+        // 直接获取已存在的USER角色
+        Role userRole = roleRepository.findByCode("user")
+                .orElseThrow(() -> new BusinessException(1003, "系统未初始化，缺少默认用户角色"));
 
         u.getRoleSet().add(userRole);
         return userRepository.save(u);
@@ -84,12 +80,7 @@ public class UserService {
      * 根据用户邮箱查询关联的角色列表
      */
     public List<Role> getUserRoles(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException(email));
-        return Optional.ofNullable(user.getRoleSet())
-                .orElse(Collections.emptySet())
-                .stream()
-                .collect(Collectors.toList());
+        return userRepository.findRolesByEmail(email);
     }
 
     /**
@@ -103,7 +94,7 @@ public class UserService {
     }
 
     /**
-     * 根据用户名查询关联的页面
+     * 根据用户邮箱查询关联的页面
      */
     public List<Page> getUserPages(String email) {
         List<String> roleCodes = getUserRoleCodes(email);
@@ -111,23 +102,22 @@ public class UserService {
         if (roleCodes.isEmpty()) {
             return Collections.emptyList();
         }
-        // 通过角色编码查询页面（使用保留的 findByRoleCodes 方法）
         return pageRepository.findByRoleCodes(roleCodes);
     }
 
     /**
      * 获取用户权限标识
      */
-    public List<String> getUserPermissions(String username) {
-        List<String> roleCodes = getUserRoleCodes(username);
+    public List<String> getUserPermissions(String email) {
+        List<String> roleCodes = getUserRoleCodes(email);
 
         // 管理员返回全量权限
-        if (roleCodes.contains("ADMIN")) {
+        if (roleCodes.contains("admin")) {
             return Collections.singletonList("*:*:*");
         }
 
         // 普通用户返回页面权限（示例：页面路径作为权限标识）
-        return getUserPages(username).stream()
+        return getUserPages(email).stream()
                 .map(Page::getPath)
                 .filter(Objects::nonNull)
                 .map(path -> "page:" + path + ":access")

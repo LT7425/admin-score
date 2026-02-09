@@ -29,16 +29,12 @@ mvn spring-boot:run -Dspring-boot.run.profiles=mysql
 - 统一响应体：`ApiResponse`
 - 全局异常处理：`GlobalExceptionHandler`
 - CORS 配置：`WebConfig`
-- Actuator 健康检查：`/actuator/health`
 - 接口文档（SpringDoc）：`/swagger-ui.html`
 - 登录认证（JWT）：
   - `POST /api/auth/login`，请求体：`{"username":"admin","password":"admin123"}`
   - 返回：`{"token":"<JWT>","username":"admin"}`
   - `POST /api/auth/register`，请求体：`{"username":"<name>","password":"<pwd>"}`
   - 返回：`{"token":"<JWT>","expiresAt":<timestamp>}`（统一响应体包裹）
-- 示例接口：
-  - `GET /api/hello` 返回连通性消息
-  - `POST /api/hello` 接收 `name` 字段并校验
 
 ## 项目结构
 
@@ -81,7 +77,6 @@ src
 ## 运行与验证
 
 - 认证策略：除 `POST /api/auth/login` 与 `POST /api/auth/register` 外，所有接口均需在请求头携带 `Authorization: Bearer <token>`。
-- 健康检查：`GET /actuator/health`（需携带有效 token）
 - Swagger UI：`GET /swagger-ui.html`（需携带有效 token）
 - 登录并访问受保护接口（PowerShell 示例）：
 
